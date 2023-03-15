@@ -1,0 +1,150 @@
+{
+    // sets font family
+    "editor.fontFamily": "Source Code Pro",
+
+    // sets the line height
+    "editor.lineHeight": 18,
+    
+    // Enables differently colored brackets
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": "active",
+    
+
+    "C_Cpp.errorSquiggles": "enabled",
+    "files.associations": {
+        "iostream": "cpp",
+        "any": "cpp",
+        "array": "cpp",
+        "atomic": "cpp",
+        "barrier": "cpp",
+        "bit": "cpp",
+        "*.tcc": "cpp",
+        "bitset": "cpp",
+        "cctype": "cpp",
+        "cfenv": "cpp",
+        "charconv": "cpp",
+        "chrono": "cpp",
+        "cinttypes": "cpp",
+        "clocale": "cpp",
+        "cmath": "cpp",
+        "codecvt": "cpp",
+        "compare": "cpp",
+        "complex": "cpp",
+        "concepts": "cpp",
+        "condition_variable": "cpp",
+        "coroutine": "cpp",
+        "csetjmp": "cpp",
+        "csignal": "cpp",
+        "cstdarg": "cpp",
+        "cstddef": "cpp",
+        "cstdint": "cpp",
+        "cstdio": "cpp",
+        "cstdlib": "cpp",
+        "cstring": "cpp",
+        "ctime": "cpp",
+        "cuchar": "cpp",
+        "cwchar": "cpp",
+        "cwctype": "cpp",
+        "deque": "cpp",
+        "forward_list": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp",
+        "vector": "cpp",
+        "exception": "cpp",
+        "expected": "cpp",
+        "algorithm": "cpp",
+        "functional": "cpp",
+        "iterator": "cpp",
+        "memory": "cpp",
+        "memory_resource": "cpp",
+        "numeric": "cpp",
+        "optional": "cpp",
+        "random": "cpp",
+        "ratio": "cpp",
+        "regex": "cpp",
+        "source_location": "cpp",
+        "string_view": "cpp",
+        "system_error": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp",
+        "fstream": "cpp",
+        "future": "cpp",
+        "initializer_list": "cpp",
+        "iomanip": "cpp",
+        "iosfwd": "cpp",
+        "istream": "cpp",
+        "latch": "cpp",
+        "limits": "cpp",
+        "mutex": "cpp",
+        "new": "cpp",
+        "numbers": "cpp",
+        "ostream": "cpp",
+        "ranges": "cpp",
+        "scoped_allocator": "cpp",
+        "semaphore": "cpp",
+        "shared_mutex": "cpp",
+        "span": "cpp",
+        "spanstream": "cpp",
+        "sstream": "cpp",
+        "stacktrace": "cpp",
+        "stdexcept": "cpp",
+        "stop_token": "cpp",
+        "streambuf": "cpp",
+        "syncstream": "cpp",
+        "thread": "cpp",
+        "typeindex": "cpp",
+        "typeinfo": "cpp",
+        "valarray": "cpp",
+        "variant": "cpp",
+        "queue": "cpp"
+    },
+
+    // Clang Formatting
+    "editor.formatOnSave": true,
+    "clang-format.executable": "C:/Program Files/LLVM/bin/clang-format.exe",
+
+    "c-cpp-flylint.cppcheck.enable": false,
+            
+    // Controls if quick suggestions should show up while typing
+    "editor.quickSuggestions": {
+        "other": true,
+        "comments": false,
+        "strings": false
+    },
+    
+    // Controls whether suggestions should be accepted on commit characters. For example, in JavaScript, the semi-colon (`;`) can be a commit character that accepts a suggestion and types that character.
+    "editor.acceptSuggestionOnCommitCharacter": true,
+    
+    // Controls if suggestions should be accepted on 'Enter' - in addition to 'Tab'. Helps to avoid ambiguity between inserting new lines or accepting suggestions. The value 'smart' means only accept a suggestion with Enter when it makes a textual change
+    "editor.acceptSuggestionOnEnter": "on",
+    
+    // Controls the delay in ms after which quick suggestions will show up.
+    "editor.quickSuggestionsDelay": 10,
+    
+    // Controls if suggestions should automatically show up when typing trigger characters
+    "editor.suggestOnTriggerCharacters": true,
+    
+    // Controls if pressing tab inserts the best suggestion and if tab cycles through other suggestions
+    "editor.tabCompletion": "off",
+    
+    // Controls whether sorting favours words that appear close to the cursor
+    "editor.suggest.localityBonus": true,
+    
+    // Controls how suggestions are pre-selected when showing the suggest list
+    "editor.suggestSelection": "first",
+    
+    // Enable word based suggestions
+    "editor.wordBasedSuggestions": true,
+    
+    // Enable parameter hints
+    "editor.parameterHints.enabled": true,
+    "cmake.configureOnOpen": false,
+    "cmake.sourceDirectory": "${workspaceFolder}/matplotlib-cpp-master",
+
+    
+}
