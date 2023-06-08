@@ -27,7 +27,7 @@
 		},
 		{
 			"type": "shell",
-			"label": "Run C++ Program: g++.exe ",
+			"label": "Run this (C/C++)",
 			"command": "C:\\msys64\\mingw64\\bin\\g++.exe -g3 -Wall \"${file}\" -o \"${fileDirname}\\${fileBasenameNoExtension}.exe\" &&\"${fileDirname}\\${fileBasenameNoExtension}.exe\"",
 			"options": {
 				"cwd": "${fileDirname}"

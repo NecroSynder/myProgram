@@ -1,8 +1,8 @@
-#include <chrono>
 #include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -24,17 +24,22 @@ public:
   inline string getName() const { return name; }
   inline string getCourse() const { return course; }
   inline int getId() const { return id; }
-};
 
+  // Mutator functions
+  inline void setName(const string &n) { name = n; }
+  inline void setCourse(const string &c) { course = c; }
+};
 
 class StudentList {
 private:
-  map<int, Student *> students;
+  map<int, shared_ptr<Student>> students;
 
 public:
-  void addStudent(Student *s) { students[s->getId()] = s; }
+  void addStudent(const shared_ptr<Student> &s) {
+    students.emplace(s->getId(), s);
+  }
   void deleteStudent(int id) { students.erase(id); }
-  void editStudent(int id, Student *s) { students[id] = s; }
+  void editStudent(int id, shared_ptr<Student> s) { students[id] = s; }
   void showList(bool loadedFromFile = true) {
     if (!loadedFromFile) {
       cout << "\nAll Students:\n";
@@ -46,31 +51,30 @@ public:
            << " | Course: " << student->getCourse() << " | ID: " << id << endl;
     }
   }
-  Student *searchByName(const string &name) {
+  shared_ptr<Student> searchByName(const string &name) {
     for (auto const &[id, student] : students) {
       if (student->getName() == name) {
         return student;
       }
     }
-    return nullptr;
+    throw runtime_error("Student not found.");
   }
-  Student *searchByCourse(const string &course) {
+  shared_ptr<Student> searchByCourse(const string &course) {
     for (auto const &[id, student] : students) {
       if (student->getCourse() == course) {
         return student;
       }
     }
-    return nullptr;
+    throw runtime_error("Student not found.");
   }
-  Student *searchById(int id) {
+  shared_ptr<Student> searchById(int id) {
     auto it = students.find(id);
     if (it == students.end()) {
-      return nullptr;
+      throw runtime_error("Student not found.");
     }
     return it->second;
   }
   void loadFromFile() {
-
     string fileName;
     cout << "Enter file name: ";
     cin >> fileName;
@@ -79,20 +83,26 @@ public:
       string line;
       while (getline(fin, line)) {
         int id;
-        string name, course;
+        string_view name, course;
         stringstream ss(line);
         ss >> id;          // remove leading whitespace
         ss.ignore(1, ','); // ignore the comma separator
-        getline(ss, name, ',');
-        getline(ss, course);
+
+        // read the line into a string and create string_views from it
+        string str;
+        getline(ss, str);
+        name = str.substr(0, str.find(','));
+        course = str.substr(str.find(',') + 1);
+
         // remove newline character at the end of the strings
         if (!name.empty() && name.back() == '\r') {
-          name.pop_back();
+          name.remove_suffix(1);
         }
         if (!course.empty() && course.back() == '\r') {
-          course.pop_back();
+          course.remove_suffix(1);
         }
-        Student *s = new Student(name, course, id);
+
+        auto s = make_shared<Student>(string(name), string(course), id);
         addStudent(s);
       }
       fin.close();
@@ -125,23 +135,22 @@ int main() {
   int choice;
   int Choice;
   cout << "Disclaimer:" << endl;
-  cout << "\tWhen loading a file, you must input the filename with the file extension and only txt files." << endl;
+  cout << "\tWhen loading a file, you must input the filename with the file "
+          "extension and only txt files."
+       << endl;
   cout << "\tExample: trial.txt" << endl;
   std::this_thread::sleep_for(std::chrono::seconds(4));
-  cout << "\nDo you have a File to load? (1: "
-          "Yes, "
-          "2: No): ";
+  cout << "\nDo you have a File to load? (1: Yes, 2: No): ";
   cin >> Choice;
-  cout << endl;
-  cout << "Choose an option from 1 to 10." << endl;
   if (Choice == 1) {
     list.loadFromFile();
     list.showList(true); // display the loaded students
   }
+  cout << "\nChoose an option from 1 to 10." << endl;
   do {
     cout << "1. Add student\n";
     cout << "2. Delete student\n";
-    cout << "3. Edit student\n";
+    cout << "3. Edit Student Name or Course\n";
     cout << "4. Show list\n";
     cout << "5. Search by name\n";
     cout << "6. Search by course\n";
@@ -162,7 +171,7 @@ int main() {
       cin >> course;
       cout << "Enter ID: ";
       cin >> id;
-      Student *s = new Student(name, course, id);
+      shared_ptr<Student> s = make_shared<Student>(name, course, id);
       list.addStudent(s);
       cout << "Student added.\n";
       break;
@@ -179,16 +188,29 @@ int main() {
       int id;
       cout << "Enter student ID to edit: ";
       cin >> id;
-      Student *s = list.searchById(id);
+      shared_ptr<Student> s = list.searchById(id);
       if (s != nullptr) {
-        string name, course;
-        cout << "Enter new name: ";
-        cin.ignore();
-        getline(cin, name);
-        cout << "Enter new course: ";
-        getline(cin, course);
-        s->getName() = name;
-        s->getCourse() = course;
+        cout << "What do you want to edit?" << endl;
+        cout << "1. Name" << endl;
+        cout << "2. Course" << endl;
+        int editOption;
+        cin >> editOption;
+        if (editOption == 1) {
+          string name;
+          cout << "Enter new name: ";
+          cin.ignore();
+          getline(cin, name);
+          s->setName(name);
+        } else if (editOption == 2) {
+          string course;
+          cout << "Enter new course: ";
+          cin.ignore();
+          getline(cin, course);
+          s->setCourse(course);
+        } else {
+          cout << "Invalid option. Student not edited.\n";
+          break;
+        }
         list.editStudent(id, s);
         cout << "Student edited.\n";
       } else {
@@ -196,7 +218,7 @@ int main() {
       }
       break;
     }
-    
+
     case 4:
       list.showList(); // display all students
       break;
@@ -205,7 +227,7 @@ int main() {
       cout << "Enter student name to search: ";
       cin.ignore();
       getline(cin, name);
-      Student *s = list.searchByName(name);
+      shared_ptr<Student> s = list.searchByName(name);
       if (s != nullptr) {
         cout << "Name: " << s->getName() << " | Course: " << s->getCourse()
              << " | ID: " << s->getId() << endl;
@@ -218,7 +240,7 @@ int main() {
       string course;
       cout << "Enter course to search: ";
       cin >> course;
-      Student *s = list.searchByCourse(course);
+      shared_ptr<Student> s = list.searchByCourse(course);
       if (s != nullptr) {
         cout << "Name: " << s->getName() << " | Course: " << s->getCourse()
              << " | ID: " << s->getId() << endl;
@@ -231,7 +253,7 @@ int main() {
       int id;
       cout << "Enter ID to search: ";
       cin >> id;
-      Student *s = list.searchById(id);
+      shared_ptr<Student> s = list.searchById(id);
       if (s != nullptr) {
         cout << "Name: " << s->getName() << " | Course: " << s->getCourse()
              << " | ID: " << s->getId() << endl;
@@ -244,9 +266,10 @@ int main() {
       list.loadFromFile();
       break;
     }
-    case 9:
+    case 9: {
       list.saveToFile();
       break;
+    }
     case 10:
       int saveChoice;
       cout << "Do you want to save the data to file again before exiting? (1: "
@@ -259,6 +282,6 @@ int main() {
       cout << "Goodbye!\n";
       exit(0);
     }
-  } while (choice != 9);
+  } while (choice != 10);
   return 0;
 }
