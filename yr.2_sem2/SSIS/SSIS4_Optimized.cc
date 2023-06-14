@@ -1,3 +1,4 @@
+
 #include <cstdio>
 #include <fstream>
 #include <iostream>
@@ -139,7 +140,7 @@ int main() {
           "extension and only txt files."
        << endl;
   cout << "\tExample: trial.txt" << endl;
-  std::this_thread::sleep_for(std::chrono::seconds(2));
+  std::this_thread::sleep_for(std::chrono::seconds(1));
   cout << "\nDo you have a File to load? (1: Yes, 2: No): ";
   cin >> Choice;
   if (Choice == 1) {
