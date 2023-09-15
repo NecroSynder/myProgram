@@ -1,3 +1,4 @@
+
 #include <cstdio>
 #include <fstream>
 #include <iostream>
@@ -33,6 +34,7 @@ public:
 class StudentList {
 private:
   map<int, shared_ptr<Student>> students;
+  string fileName;
 
 public:
   void addStudent(const shared_ptr<Student> &s) {
@@ -51,6 +53,7 @@ public:
            << " | Course: " << student->getCourse() << " | ID: " << id << endl;
     }
   }
+
   shared_ptr<Student> searchByName(const string &name) {
     for (auto const &[id, student] : students) {
       if (student->getName() == name) {
@@ -74,58 +77,58 @@ public:
     }
     return it->second;
   }
+
   void loadFromFile() {
-    string fileName;
     cout << "Enter file name: ";
     cin >> fileName;
     ifstream fin(fileName);
-    if (fin.is_open()) {
+    ifstream courseFile("courses.txt");
+    if (fin.is_open() && courseFile.is_open()) {
+      // int id;
+      string name, course;
       string line;
       while (getline(fin, line)) {
-        int id;
-        string_view name, course;
         stringstream ss(line);
-        ss >> id;          // remove leading whitespace
-        ss.ignore(1, ','); // ignore the comma separator
-
-        // read the line into a string and create string_views from it
-        string str;
-        getline(ss, str);
-        name = str.substr(0, str.find(','));
-        course = str.substr(str.find(',') + 1);
-
-        // remove newline character at the end of the strings
-        if (!name.empty() && name.back() == '\r') {
-          name.remove_suffix(1);
+        int id;
+        string name;
+        if (ss >> id && getline(ss.ignore(), name, ',')) {
+          string course;
+          if (getline(courseFile, course)) {
+            // remove newline character at the end of the course string
+            if (!course.empty() && course.back() == '\r') {
+              course = course.substr(0, course.size() - 1);
+            }
+            auto s = make_shared<Student>(name, course, id);
+            addStudent(s);
+          }
         }
-        if (!course.empty() && course.back() == '\r') {
-          course.remove_suffix(1);
-        }
-
-        auto s = make_shared<Student>(string(name), string(course), id);
-        addStudent(s);
       }
       fin.close();
-      cout << "Data loaded from file.\n";
+      courseFile.close();
+      cout << "Data loaded from files.\n";
     } else {
-      cout << "File not found, starting with an empty list.\n";
+      cout << "Files not found, starting with an empty list.\n";
     }
   }
 
   void saveToFile() {
-    string fileName;
-    cout << "Enter file name: ";
-    cin >> fileName;
-    ofstream fout(fileName);
-    if (fout.is_open()) {
+    if (fileName
+            .empty()) { // Only ask for the file name if it's not already set
+      cout << "Enter file name: ";
+      cin >> fileName;
+    }
+    ofstream studentFile(fileName);
+    ofstream courseFile("courses.txt");
+    if (studentFile.is_open() && courseFile.is_open()) {
       for (auto const &[id, student] : students) {
-        fout << student->getId() << "," << student->getName() << ","
-             << student->getCourse() << endl;
+        studentFile << student->getId() << "," << student->getName() << endl;
+        courseFile << student->getCourse() << endl;
       }
-      fout.close();
-      cout << "Data saved to file.\n";
+      studentFile.close();
+      courseFile.close();
+      cout << "Data saved to files.\n";
     } else {
-      cout << "Unable to save data to file.\n";
+      cout << "Unable to save data to files.\n";
     }
   }
 };
@@ -139,7 +142,7 @@ int main() {
           "extension and only txt files."
        << endl;
   cout << "\tExample: trial.txt" << endl;
-  std::this_thread::sleep_for(std::chrono::seconds(4));
+  std::this_thread::sleep_for(std::chrono::seconds(1));
   cout << "\nDo you have a File to load? (1: Yes, 2: No): ";
   cin >> Choice;
   if (Choice == 1) {
